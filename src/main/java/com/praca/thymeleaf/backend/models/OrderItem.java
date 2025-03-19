@@ -15,11 +15,27 @@ public class OrderItem {
     private int quantity; // Ilość produktu
 
     @ManyToOne
+    @JoinColumn(name = "order_id")
     private Order order; // Powiązane zamówienie
 
     private double price; // Cena jednostkowa produktu
 
-    // Gettery i settery
+    // 🔹 Konstruktor bezargumentowy
+    public OrderItem() {}
+
+    // 🔹 Konstruktor, który automatycznie ustawia cenę
+    public OrderItem(Product product, int quantity) {
+        this.product = product;
+        this.quantity = quantity;
+        this.price = product.getPrice();
+    }
+
+    // 🔹 Obliczanie całkowitej ceny pozycji
+    public double calculateTotalPrice() {
+        return this.quantity * this.price;
+    }
+
+    // 🔹 Gettery i settery
     public Long getId() {
         return id;
     }
@@ -34,6 +50,7 @@ public class OrderItem {
 
     public void setProduct(Product product) {
         this.product = product;
+        this.price = product.getPrice(); // Aktualizujemy cenę przy zmianie produktu
     }
 
     public int getQuantity() {

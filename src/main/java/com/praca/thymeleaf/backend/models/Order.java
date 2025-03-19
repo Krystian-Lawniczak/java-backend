@@ -2,6 +2,7 @@ package com.praca.thymeleaf.backend.models;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -15,8 +16,8 @@ public class Order {
     @ManyToOne
     private User user; // Użytkownik, który złożył zamówienie
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-    private List<OrderItem> items; // Lista produktów w zamówieniu
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItem> items = new ArrayList<>(); // Lista produktów w zamówieniu
 
     private LocalDateTime orderDate; // Data zamówienia
 
@@ -24,7 +25,27 @@ public class Order {
 
     private String status; // Status zamówienia: "PENDING", "COMPLETED", "CANCELLED"
 
-    // Gettery i Settery
+    @Column(name = "is_cart") // 🔥 Dodano mapowanie na bazę danych
+    private Boolean isCart = true; // Domyślnie każde zamówienie zaczyna jako koszyk
+
+    // 🔹 Konstruktor
+    public Order() {
+        this.isCart = true; // Domyślnie każde zamówienie jest koszykiem
+        this.status = "PENDING";
+        this.orderDate = LocalDateTime.now();
+    }
+
+    // 🔹 Metoda obliczająca całkowitą cenę zamówienia
+    public double calculateTotalPrice() {
+        if (items == null || items.isEmpty()) {
+            return 0.0;
+        }
+        return items.stream()
+                .mapToDouble(item -> item.getQuantity() * item.getPrice())
+                .sum();
+    }
+
+    // 🔹 Gettery i Settery
     public Long getId() {
         return id;
     }
@@ -47,6 +68,7 @@ public class Order {
 
     public void setItems(List<OrderItem> items) {
         this.items = items;
+        this.totalPrice = calculateTotalPrice(); // Automatyczna aktualizacja ceny
     }
 
     public LocalDateTime getOrderDate() {
@@ -58,11 +80,7 @@ public class Order {
     }
 
     public double getTotalPrice() {
-        return totalPrice;
-    }
-
-    public void setTotalPrice(double totalPrice) {
-        this.totalPrice = totalPrice;
+        return calculateTotalPrice(); // Zawsze zwraca aktualną cenę
     }
 
     public String getStatus() {
@@ -71,5 +89,13 @@ public class Order {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Boolean getIsCart() {
+        return isCart;
+    }
+
+    public void setIsCart(Boolean isCart) {
+        this.isCart = isCart;
     }
 }
