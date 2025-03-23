@@ -90,8 +90,10 @@ public class OrderService {
         Order cart = getOrCreateCart(user);
 
         if (cart.getItems().isEmpty()) {
-            throw new RuntimeException("Cannot finalize an empty cart");
+            System.out.println("❌ Koszyk jest pusty – nie można złożyć zamówienia.");
+            return cart; // lub ResponseEntity.badRequest() po stronie kontrolera
         }
+
 
         cart.setIsCart(false);
         cart.setOrderDate(LocalDateTime.now());
@@ -102,7 +104,7 @@ public class OrderService {
 
     // 🔹 Pobieranie zamówień użytkownika
     public List<Order> getOrdersByUser(Long userId) {
-        return orderRepository.findByUserId(userId);
+        return orderRepository.findByUserIdAndIsCart(userId, false); // tylko finalne zamówienia
     }
 
     // 🔹 Aktualizacja statusu zamówienia

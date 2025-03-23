@@ -65,7 +65,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/orders/cart/**").permitAll()
                         .requestMatchers("/api/favorites/**").authenticated()
                         .requestMatchers(HttpMethod.PATCH, "/api/users/change-password").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-                        .requestMatchers("/api/orders/user/**").hasAuthority("ROLE_USER")
+                        .requestMatchers("/api/orders/user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+
                         .requestMatchers("/api/users/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated()
