@@ -1,16 +1,15 @@
 package com.praca.thymeleaf.backend.models;
 
 public class ChangePasswordRequest {
-    private String currentPassword;
+    private Long userId;
     private String newPassword;
 
-    // Gettery i settery
-    public String getCurrentPassword() {
-        return currentPassword;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setCurrentPassword(String currentPassword) {
-        this.currentPassword = currentPassword;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getNewPassword() {
