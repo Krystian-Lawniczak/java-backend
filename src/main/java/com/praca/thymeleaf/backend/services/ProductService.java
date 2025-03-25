@@ -4,6 +4,7 @@ import com.praca.thymeleaf.backend.models.Product;
 import com.praca.thymeleaf.backend.repositories.ProductRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,4 +41,16 @@ public class ProductService {
     public List<Product> searchProducts(String keyword) {
         return productRepository.findByNameContainingIgnoreCase(keyword);
     }
+
+    public List<Product> getProductsByCategory(String category) {
+        return productRepository.findByCategoryIgnoreCase(category);
+    }
+
+    public List<Product> getRandomProducts(int count) {
+        List<Product> all = productRepository.findAll();
+        Collections.shuffle(all);
+        return all.stream().limit(count).toList();
+    }
+
+
 }

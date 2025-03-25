@@ -28,5 +28,16 @@ public class ProductController {
     public List<Product> getAllProducts() {
         return productService.getAllProducts();
     }
+
+    @GetMapping("/category/{category}")
+    public List<Product> getProductsByCategory(@PathVariable String category) {
+        return productService.getProductsByCategory(category);
+    }
+
+    @GetMapping("/random")
+    public List<Product> getRandomProducts() {
+        return productService.getRandomProducts(15); // 15 losowych
+    }
+
 }
 
