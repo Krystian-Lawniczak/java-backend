@@ -40,17 +40,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String jwt;
         final String username;
 
-        // Logowanie nagłówka Authorization
+
         System.out.println("[JwtAuthenticationFilter] Authorization Header: " + authHeader);
 
-        // Sprawdź, czy nagłówek zawiera token JWT
+
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             System.out.println("[JwtAuthenticationFilter] No JWT token found in header or incorrect format.");
             filterChain.doFilter(request, response);
             return;
         }
 
-        // Wyodrębnij token JWT
+
         jwt = authHeader.substring(7);
         System.out.println("✅ Token JWT: " + jwt);
         try {

@@ -9,9 +9,9 @@ import java.util.List;
 @Repository
 public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
 
-    // 🔹 Pobiera wszystkie pozycje dla danego zamówienia
+
     List<OrderItem> findByOrderId(Long orderId);
 
-    // 🔹 Usuwa wszystkie pozycje zamówienia
+
     void deleteByOrderId(Long orderId);
 }

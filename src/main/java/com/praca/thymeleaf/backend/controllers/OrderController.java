@@ -9,20 +9,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/orders")
 public class OrderController {
 
     private final OrderService orderService;
-    private final UserRepository userRepository; // 🔹 Dodano UserRepository
+    private final UserRepository userRepository;
 
     public OrderController(OrderService orderService, UserRepository userRepository) {
         this.orderService = orderService;
-        this.userRepository = userRepository; // 🔹 Wstrzyknięcie zależności
+        this.userRepository = userRepository;
     }
 
-    // 🔹 Pobieranie zawartości koszyka użytkownika
+
     @GetMapping("/cart/{userId}")
     public ResponseEntity<Order> getCart(@PathVariable Long userId) {
         User user = userRepository.findById(userId)
@@ -30,14 +31,14 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getOrCreateCart(user));
     }
 
-    // 🔹 Dodawanie produktu do koszyka
+
     @PostMapping("/cart/add")
     public ResponseEntity<Order> addToCart(@RequestBody CartRequest request) {
         return ResponseEntity.ok(orderService.addToCart(request.getUserId(), request.getProductId(), request.getQuantity()));
     }
 
 
-    // 🔹 Usuwanie produktu z koszyka
+
     @DeleteMapping("/cart/remove")
     public ResponseEntity<Order> removeFromCart(
             @RequestParam Long userId,
@@ -45,19 +46,21 @@ public class OrderController {
         return ResponseEntity.ok(orderService.removeFromCart(userId, productId));
     }
 
-    // 🔹 Finalizacja zamówienia – konwersja koszyka w zamówienie
+
     @PostMapping("/cart/finalize/{userId}")
-    public ResponseEntity<Order> finalizeOrder(@PathVariable Long userId) {
-        return ResponseEntity.ok(orderService.finalizeOrder(userId));
+    public ResponseEntity<Order> finalizeOrder(
+            @PathVariable Long userId,
+            @RequestBody Map<String, String> formData
+    ) {
+        return ResponseEntity.ok(orderService.finalizeOrder(userId, formData));
     }
 
-    // 🔹 Pobieranie historii zamówień użytkownika
+
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<Order>> getOrdersByUser(@PathVariable Long userId) {
         return ResponseEntity.ok(orderService.getOrdersByUser(userId));
     }
 
-    // 🔹 Aktualizacja statusu zamówienia
     @PutMapping("/{orderId}/status")
     public ResponseEntity<Void> updateOrderStatus(
             @PathVariable Long orderId,

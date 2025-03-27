@@ -12,12 +12,9 @@ import java.util.Optional;
 @Repository
 public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
 
-    // ✅ Sprawdza, czy dany użytkownik już dodał dany produkt do ulubionych
     boolean existsByUserAndProduct(User user, Product product);
 
-    // ✅ Pobiera listę ulubionych produktów danego użytkownika
     List<Favorite> findByUserId(Long userId);
 
-    // ✅ Pobiera pojedynczy wpis ulubionych (do usunięcia)
     Optional<Favorite> findByUserAndProduct(User user, Product product);
 }

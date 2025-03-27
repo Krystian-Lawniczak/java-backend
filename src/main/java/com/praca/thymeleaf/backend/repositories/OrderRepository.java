@@ -11,11 +11,11 @@ import java.util.Optional;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
-    // 🔹 Pobieranie wszystkich zamówień użytkownika
+
     List<Order> findByUserId(Long userId);
 
     List<Order> findByUserIdAndIsCart(Long userId, boolean isCart);
 
-    // 🔹 Pobieranie aktywnego koszyka użytkownika (jeśli istnieje)
+
     Optional<Order> findByUserAndIsCart(User user, boolean isCart);
 }

@@ -37,8 +37,8 @@ public class UserController {
                 return ResponseEntity.badRequest().body(Map.of("message", "Email jest już zajęty!"));
             }
 
-            user.setId(null); // Zachowujemy zerowanie ID, ale usuwamy hashowanie!
-            User registeredUser = userService.registerUser(user); // ✅ Przekazujemy surowe hasło do UserService
+            user.setId(null);
+            User registeredUser = userService.registerUser(user);
 
             return ResponseEntity.ok(Map.of("message", "Rejestracja udana!", "userId", registeredUser.getId().toString()));
         } catch (Exception e) {
@@ -52,14 +52,12 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> loginUser(@RequestBody Map<String, String> loginRequest) {
-        String email = loginRequest.get("email"); // Zmienione z "username" na "email"
+        String email = loginRequest.get("email");
         String password = loginRequest.get("password");
 
-        // Uwierzytelnienie użytkownika
         String authenticatedEmail = userService.authenticateUser(email, password);
         String token = jwtUtil.generateToken(authenticatedEmail);
 
-        // Pobranie danych użytkownika
         User user = userService.getUserByEmail(authenticatedEmail);
 
         Map<String, Object> response = Map.of(

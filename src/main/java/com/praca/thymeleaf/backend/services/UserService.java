@@ -18,12 +18,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder; // ✅ Poprawione - używamy PasswordEncoder (interfejs)
+    private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
 
     @Autowired
     public UserService(UserRepository userRepository,
-                       PasswordEncoder passwordEncoder, // ✅ Wstrzykujemy PasswordEncoder zamiast BCryptPasswordEncoder
+                       PasswordEncoder passwordEncoder,
                        @Lazy AuthenticationManager authenticationManager) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -31,8 +31,8 @@ public class UserService {
     }
 
     public void testPassword() {
-        String rawPassword = "chad123456"; // Surowe hasło
-        String hashedPasswordFromDB = "$2a$10$XTFB8K.EXVN96WhnEXV/5eg0UsoSgy1DK4VhMVG.2TC8WCJK7YrNq"; // Z bazy
+        String rawPassword = "chad123456";
+        String hashedPasswordFromDB = "$2a$10$XTFB8K.EXVN96WhnEXV/5eg0UsoSgy1DK4VhMVG.2TC8WCJK7YrNq";
 
         boolean matches = passwordEncoder.matches(rawPassword, hashedPasswordFromDB);
         System.out.println("🔍 Test ręcznego porównania: " + matches);
@@ -46,7 +46,7 @@ public class UserService {
     public void testEncoder() {
         String rawPassword = "chad123456";
 
-        // 🔥 Utwórz NOWY obiekt BCryptPasswordEncoder() do testów
+
         BCryptPasswordEncoder testEncoder = new BCryptPasswordEncoder();
 
         String testHash = testEncoder.encode(rawPassword); // Nowy hash
@@ -64,16 +64,16 @@ public class UserService {
     public void testEncoderConsistency() {
         String rawPassword = "chad123456";
 
-        // 🔥 Sprawdzenie, czy `passwordEncoder` wstrzyknięty do UserService działa poprawnie
+
         String hashFromUserService = passwordEncoder.encode(rawPassword);
         System.out.println("🔑 Hash z UserService: " + hashFromUserService);
 
-        // 🔥 Sprawdzenie, czy nowa instancja BCryptPasswordEncoder daje ten sam efekt
+
         BCryptPasswordEncoder bcryptTestEncoder = new BCryptPasswordEncoder();
         String hashFromNewInstance = bcryptTestEncoder.encode(rawPassword);
         System.out.println("🆕 Hash z nowego BCryptPasswordEncoder: " + hashFromNewInstance);
 
-        // 🔥 Porównanie obu instancji
+
         boolean matches = bcryptTestEncoder.matches(rawPassword, hashFromUserService);
         System.out.println("✅ Czy encodery są zgodne?: " + matches);
     }
@@ -103,19 +103,19 @@ public class UserService {
             throw new RuntimeException("Name already taken");
         }
 
-        // 🔥 Debug: sprawdzamy, czy hasło jest już zaszyfrowane
+
         if (user.getPassword().startsWith("$2a$")) {
             throw new RuntimeException("❌ BŁĄD: Hasło jest już zaszyfrowane! Podwójne hashowanie!");
         }
 
-        // 📝 Sprawdzenie, co przychodzi jako surowe hasło
-        System.out.println("📝 Surowe hasło przed zapisaniem: " + user.getPassword());
 
-        // ✅ Haszujemy hasło przed zapisaniem do bazy
+        System.out.println("Surowe hasło przed zapisaniem: " + user.getPassword());
+
+
         String hashedPassword = passwordEncoder.encode(user.getPassword());
 
-        // 🔑 Sprawdzamy, jak wygląda zahashowane hasło
-        System.out.println("🔑 Zahashowane hasło przed zapisaniem: " + hashedPassword);
+
+        System.out.println("Zahashowane hasło przed zapisaniem: " + hashedPassword);
 
         user.setPassword(hashedPassword);
 
@@ -133,14 +133,14 @@ public class UserService {
 
         System.out.println("✅ Znaleziony użytkownik: " + user.getEmail());
 
-        // 🔑 Pobranie hasła z bazy
+
         String hashedPasswordFromDB = user.getPassword();
-        System.out.println("🔐 Hasło w bazie: " + hashedPasswordFromDB);
+        System.out.println("Hasło w bazie: " + hashedPasswordFromDB);
 
-        // 🔑 Wyświetlenie podanego hasła przed porównaniem
-        System.out.println("📝 Surowe podane hasło: " + password);
 
-        // 🔥 Porównujemy czyste hasło z hasłem w bazie
+        System.out.println("Surowe podane hasło: " + password);
+
+
         boolean matches = passwordEncoder.matches(password, hashedPasswordFromDB);
         System.out.println("✅ Czy hasło pasuje?: " + matches);
 

@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/products") // Bazowy URL dla tego kontrolera
+@RequestMapping("/api/products")
 public class ProductController {
 
     private final ProductService productService;
 
-    // Konstruktor z wstrzykiwaniem serwisu
+
     public ProductController(ProductService productService) {
         this.productService = productService;
     }

@@ -6,69 +6,41 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "orders") // Zmieniamy nazwę tabeli na "orders"
+@Table(name = "orders")
 public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private LocalDateTime orderDate;
+
+    private boolean isCart;
+
+    private String status;
+
+    private String deliveryAddress;
+    private String paymentMethod;
+    private String deliveryMethod;
+    private String customerName;
+    private String customerEmail;
+
     @ManyToOne
-    private User user; // Użytkownik, który złożył zamówienie
+    private User user;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OrderItem> items = new ArrayList<>(); // Lista produktów w zamówieniu
+    private List<OrderItem> items = new ArrayList<>();
 
-    private LocalDateTime orderDate; // Data zamówienia
+    private double totalPrice;
 
-    private double totalPrice; // Całkowita cena zamówienia
+    // --- Gettery i Settery ---
 
-    private String status; // Status zamówienia: "PENDING", "COMPLETED", "CANCELLED"
-
-    @Column(name = "is_cart") // 🔥 Dodano mapowanie na bazę danych
-    private Boolean isCart = true; // Domyślnie każde zamówienie zaczyna jako koszyk
-
-    // 🔹 Konstruktor
-    public Order() {
-        this.isCart = true; // Domyślnie każde zamówienie jest koszykiem
-        this.status = "PENDING";
-        this.orderDate = LocalDateTime.now();
-    }
-
-    // 🔹 Metoda obliczająca całkowitą cenę zamówienia
-    public double calculateTotalPrice() {
-        if (items == null || items.isEmpty()) {
-            return 0.0;
-        }
-        return items.stream()
-                .mapToDouble(item -> item.getQuantity() * item.getPrice())
-                .sum();
-    }
-
-    // 🔹 Gettery i Settery
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public List<OrderItem> getItems() {
-        return items;
-    }
-
-    public void setItems(List<OrderItem> items) {
-        this.items = items;
-        this.totalPrice = calculateTotalPrice(); // Automatyczna aktualizacja ceny
     }
 
     public LocalDateTime getOrderDate() {
@@ -79,8 +51,12 @@ public class Order {
         this.orderDate = orderDate;
     }
 
-    public double getTotalPrice() {
-        return calculateTotalPrice(); // Zawsze zwraca aktualną cenę
+    public boolean isCart() {
+        return isCart;
+    }
+
+    public void setIsCart(boolean isCart) {
+        this.isCart = isCart;
     }
 
     public String getStatus() {
@@ -91,11 +67,73 @@ public class Order {
         this.status = status;
     }
 
-    public Boolean getIsCart() {
-        return isCart;
+    public List<OrderItem> getItems() {
+        return items;
     }
 
-    public void setIsCart(Boolean isCart) {
-        this.isCart = isCart;
+    public void setItems(List<OrderItem> items) {
+        this.items = items;
+    }
+
+    public double getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(double totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public void calculateTotalPrice() {
+        this.totalPrice = items.stream()
+                .mapToDouble(item -> item.getPrice() * item.getQuantity())
+                .sum();
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public String getDeliveryAddress() {
+        return deliveryAddress;
+    }
+
+    public void setDeliveryAddress(String deliveryAddress) {
+        this.deliveryAddress = deliveryAddress;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public String getDeliveryMethod() {
+        return deliveryMethod;
+    }
+
+    public void setDeliveryMethod(String deliveryMethod) {
+        this.deliveryMethod = deliveryMethod;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
+    public String getCustomerEmail() {
+        return customerEmail;
+    }
+
+    public void setCustomerEmail(String customerEmail) {
+        this.customerEmail = customerEmail;
     }
 }

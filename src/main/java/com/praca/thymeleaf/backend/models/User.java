@@ -35,7 +35,7 @@ public class User {
     private boolean enabled = true;
 
     @NotBlank(message = "Role cannot be blank")
-    private String role = "ROLE_USER"; // Default role for new users
+    private String role = "ROLE_USER";
 
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

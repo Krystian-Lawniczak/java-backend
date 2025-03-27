@@ -11,7 +11,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/favorites")
-@CrossOrigin(origins = "http://localhost:5173") // 🔥 Zezwalamy na żądania z frontendu
+@CrossOrigin(origins = "http://localhost:5173")
 public class FavoriteController {
 
     private final FavoriteService favoriteService;
@@ -20,14 +20,12 @@ public class FavoriteController {
         this.favoriteService = favoriteService;
     }
 
-    // ✅ Pobieranie ulubionych produktów użytkownika
     @GetMapping("/{userId}")
     public ResponseEntity<List<Product>> getFavorites(@PathVariable Long userId) {
         List<Product> favoriteProducts = favoriteService.getUserFavorites(userId);
         return ResponseEntity.ok(favoriteProducts);
     }
 
-    // ✅ Dodawanie produktu do ulubionych
     @PostMapping("/add")
     public ResponseEntity<?> addToFavorites(@RequestBody Map<String, Long> payload) {
         Long userId = payload.get("userId");
@@ -45,7 +43,6 @@ public class FavoriteController {
         }
     }
 
-    // ✅ Usuwanie produktu z ulubionych
     @DeleteMapping("/remove")
     public ResponseEntity<?> removeFromFavorites(@RequestBody Map<String, Long> payload) {
         Long userId = payload.get("userId");

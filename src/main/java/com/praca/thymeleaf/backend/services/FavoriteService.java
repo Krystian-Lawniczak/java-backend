@@ -34,9 +34,9 @@ public class FavoriteService {
         User user = userOpt.get();
         Product product = productOpt.get();
 
-        // 🔥 Sprawdzenie, czy produkt już jest w ulubionych
+
         if (favoriteRepository.existsByUserAndProduct(user, product)) {
-            return false;  // Zwracamy false, aby nie dodać ponownie
+            return false;
         }
 
         Favorite favorite = new Favorite(user, product);
@@ -58,17 +58,17 @@ public class FavoriteService {
 
         Optional<Favorite> favoriteOpt = favoriteRepository.findByUserAndProduct(user, product);
         if (favoriteOpt.isEmpty()) {
-            return false; // Jeśli produkt nie był w ulubionych, zwracamy false
+            return false;
         }
 
         favoriteRepository.delete(favoriteOpt.get());
-        return true; // Produkt został usunięty
+        return true;
     }
 
     public List<Product> getUserFavorites(Long userId) {
         return favoriteRepository.findByUserId(userId)
                 .stream()
-                .map(Favorite::getProduct) // 🔥 Pobieramy tylko produkt, a nie całą relację
+                .map(Favorite::getProduct)
                 .collect(Collectors.toList());
     }
 

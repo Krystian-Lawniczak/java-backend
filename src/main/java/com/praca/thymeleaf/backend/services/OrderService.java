@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -30,13 +31,13 @@ public class OrderService {
         this.orderItemRepository = orderItemRepository;
     }
 
-    // 🔹 Pobieramy aktywny koszyk użytkownika (jeśli nie istnieje, tworzymy nowy)
-    public Order getOrCreateCart(User user) { // Teraz przyjmuje obiekt User zamiast userId
+
+    public Order getOrCreateCart(User user) {
         return orderRepository.findByUserAndIsCart(user, true)
                 .orElseGet(() -> {
                     Order newCart = new Order();
                     newCart.setUser(user);
-                    newCart.setIsCart(true);  // ✅ Poprawna wersja
+                    newCart.setIsCart(true);
                     newCart.setOrderDate(LocalDateTime.now());
                     newCart.setStatus("CART");
                     return orderRepository.save(newCart);
@@ -44,8 +45,6 @@ public class OrderService {
     }
 
 
-
-    // 🔹 Dodawanie produktu do koszyka
     public Order addToCart(Long userId, Long productId, int quantity) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -54,7 +53,6 @@ public class OrderService {
 
         Order cart = getOrCreateCart(user);
 
-        // Sprawdzamy, czy produkt już jest w koszyku
         Optional<OrderItem> existingItem = cart.getItems().stream()
                 .filter(item -> item.getProduct().getId().equals(productId))
                 .findFirst();
@@ -71,7 +69,7 @@ public class OrderService {
         return orderRepository.save(cart);
     }
 
-    // 🔹 Usuwanie produktu z koszyka
+
     public Order removeFromCart(Long userId, Long productId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -83,35 +81,39 @@ public class OrderService {
         return orderRepository.save(cart);
     }
 
-    // 🔹 Finalizacja zamówienia – zamiana koszyka w zamówienie
-    public Order finalizeOrder(Long userId) {
+
+    public Order finalizeOrder(Long userId, Map<String, String> formData) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         Order cart = getOrCreateCart(user);
 
         if (cart.getItems().isEmpty()) {
-            System.out.println("❌ Koszyk jest pusty – nie można złożyć zamówienia.");
-            return cart; // lub ResponseEntity.badRequest() po stronie kontrolera
+            throw new RuntimeException("Koszyk jest pusty – nie można złożyć zamówienia.");
         }
-
 
         cart.setIsCart(false);
         cart.setOrderDate(LocalDateTime.now());
         cart.setStatus("PENDING");
 
+        // 🔽 dane z formularza (Checkout.jsx)
+        cart.setDeliveryAddress(formData.get("address"));
+        cart.setPaymentMethod(formData.get("paymentMethod"));
+        cart.setDeliveryMethod(formData.get("deliveryMethod"));
+        cart.setCustomerName(formData.get("fullName"));
+        cart.setCustomerEmail(formData.get("email"));
+
         return orderRepository.save(cart);
     }
 
-    // 🔹 Pobieranie zamówień użytkownika
+
     public List<Order> getOrdersByUser(Long userId) {
-        return orderRepository.findByUserIdAndIsCart(userId, false); // tylko finalne zamówienia
+        return orderRepository.findByUserIdAndIsCart(userId, false);
     }
 
-    // 🔹 Aktualizacja statusu zamówienia
+
     public void updateOrderStatus(Long orderId, String status) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
-
         order.setStatus(status);
         orderRepository.save(order);
     }
